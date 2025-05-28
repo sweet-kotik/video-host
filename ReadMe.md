@@ -9,12 +9,11 @@
 - TypeScript
 - PostgreSQL (база данных)
 - MinIO (объектное хранилище для видео файлов)
-- Docker
+- Docker (Временно не доступен в проекте)
 
 ### Frontend
 - React
 - TypeScript
-- Modern UI компоненты
 
 ## Требования
 
