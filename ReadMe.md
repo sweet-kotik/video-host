@@ -26,7 +26,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone [URL вашего репозитория]
+git clone https://github.com/sweet-kotik/video-host.git
 cd video-host
 ```
 
