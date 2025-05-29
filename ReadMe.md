@@ -9,7 +9,7 @@
 - TypeScript
 - PostgreSQL (база данных)
 - MinIO (объектное хранилище для видео файлов)
-- Docker (Временно не доступен в проекте)
+- Docker 
 
 ### Frontend
 - React
@@ -53,7 +53,7 @@ cd frontend
 npm install
 ```
 
-### 4. Запуск с помощью Docker Compose (врменно не доступно)
+### 4. Запуск с помощью Docker Compose 
 
 ```bash
 docker-compose up -d
@@ -88,9 +88,7 @@ npm start
 video-host/
 ├── backend/           # NestJS backend приложение
 ├── frontend/          # React frontend приложение
-├── nginx/            # Nginx конфигурация
-├── minio-data/       # MinIO данные
-└── pg-data/         # PostgreSQL данные
+└── nginx/            # Nginx конфигурация
 ```
 
 
