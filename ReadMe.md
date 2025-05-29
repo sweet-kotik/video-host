@@ -9,12 +9,11 @@
 - TypeScript
 - PostgreSQL (база данных)
 - MinIO (объектное хранилище для видео файлов)
-- Docker
+- Docker (Временно не доступен в проекте)
 
 ### Frontend
 - React
 - TypeScript
-- Modern UI компоненты
 
 ## Требования
 
@@ -27,7 +26,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone [URL вашего репозитория]
+git clone https://github.com/sweet-kotik/video-host.git
 cd video-host
 ```
 
