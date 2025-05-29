@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import config from "../config";
 
 export default function useAuth() {
     const [isAuth, setIsAuth] = useState(false);
@@ -9,8 +10,8 @@ export default function useAuth() {
 
     const loadUserData = async () => {
         try {
-            const response = await axios.get('http://192.168.3.3:3001/api/user/checkSession', {
-                withCredentials: true
+            const response = await axios.get(`${config.apiUrl}/user/checkSession`, {
+                withCredentials: config.withCredentials
             });
             console.log('Получены данные с сервера:', response);
 
@@ -38,12 +39,13 @@ export default function useAuth() {
 
             console.log('Запрос на вход:', username, password);
             
-            const response = await axios.post('http://192.168.3.3:3001/api/user/login', 
+            const response = await axios.post(`${config.apiUrl}/user/login`, 
                 { username, password },
-                { withCredentials: true }
+                { withCredentials: config.withCredentials }
             );
 
             console.log('Получен ответ с сервера', response);
+            console.log('Куки после логина:', document.cookie);
             
             setUser(response.data.user);
             setIsAuth(true);
@@ -62,8 +64,8 @@ export default function useAuth() {
 
     const logout = async () => {
         try {
-            await axios.post('http://192.168.3.3:3001/api/user/logout', {}, {
-                withCredentials: true
+            await axios.post(`${config.apiUrl}/user/logout`, {}, {
+                withCredentials: config.withCredentials
             });
         } catch (error) {
             console.error('Ошибка при выходе:', error);

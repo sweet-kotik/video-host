@@ -33,7 +33,9 @@ export class UserController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ) {
-    console.log('бэкенд получил запрос на вход:', username, password);
+    this.logger.log('Запрос на вход получен');
+    this.logger.log('Headers:', request.headers);
+    this.logger.log('Cookies:', request.cookies);
 
     if (!username || !password) {
       throw new BadRequestException('Username and password are required');
@@ -44,11 +46,17 @@ export class UserController {
 
     const result = await this.userService.login(username, password, userAgent as string, ip as string);
 
+    this.logger.log('Устанавливаем куки с токеном:', result.token);
+
     response.cookie('auth_token', result.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day
     })
+
+    this.logger.log('Куки установлены');
+    this.logger.log('Проверка установленных куки:', response.getHeader('Set-Cookie'));
 
     return {
       user: result.user,
@@ -76,8 +84,9 @@ export class UserController {
 
     response.cookie('auth_token', result.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     })
 
     return {
@@ -91,23 +100,32 @@ export class UserController {
     @Req() request: Request,
   ) {
     try {
-      this.logger.log(request.cookies);
+      this.logger.log('Получен запрос на проверку сессии');
+      this.logger.log('Все куки:', request.cookies);
+      this.logger.log('Заголовки запроса:', request.headers);
 
       const token = request.cookies['auth_token'];
 
-      this.logger.log(token);
+      this.logger.log('Найденный токен:', token);
 
       if (!token) {
-        throw new Error('Токен не найден в объекте запроса');
+        this.logger.warn('Токен не найден в куках');
+        return {
+          error: 'Требуется авторизация',
+          isAuthenticated: false
+        };
       }
 
       const user = await this.userService.checkSession(token);
-
-      return user;
-    } catch (error) {
-      this.logger.error('Не найден токен в объекте запроса (возможно пользователь не авторизован)', error.stack);
       return {
-        error: 'Не найден токен'
+        ...user,
+        isAuthenticated: true
+      };
+    } catch (error) {
+      this.logger.error('Ошибка при проверке сессии:', error.stack);
+      return {
+        error: 'Ошибка при проверке сессии',
+        isAuthenticated: false
       }
     }
   }
@@ -117,7 +135,9 @@ export class UserController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ) {
+    this.logger.log('Cookies:', request.cookies);
     const token = request.cookies['auth_token'];
+    this.logger.log('Auth token:', token);
 
     if (!token) {
       throw new Error('Токен не найден в объекте запроса');
@@ -127,7 +147,8 @@ export class UserController {
 
     response.clearCookie('auth_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production'
+      secure: true,
+      sameSite: 'none'
     });
 
 

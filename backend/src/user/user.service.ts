@@ -74,7 +74,7 @@ export class UserService {
                 });
 
                 await minioClient.putObject(
-                    process.env.MINIO_BUCKET || 'users',
+                    process.env.MINIO_BUCKET || 'videos',
                     `users/${generatedFilename}-${file.filename}`,
                     file.buffer
                 );
@@ -83,7 +83,7 @@ export class UserService {
             }
 
             // Создаем и сохраняем нового пользователя
-            const newUser = this.userRepository.create({
+            const newUser = await this.userRepository.create({
                 username,
                 password: hashedPassword,
                 email,
@@ -98,14 +98,27 @@ export class UserService {
 
             const savedUser = await this.userRepository.save(newUser);
 
-            const loginData = await this.login(savedUser.username, savedUser.password, userAgent, ip)
+            // Создаем сессию для нового пользователя
+            const session = await this.sessionService.createSession(
+                savedUser.id,
+                userAgent,
+                ip
+            );
+            this.logger.log('Создана ссесия для нового пользователя', session);
+
+            // Генерируем JWT токен для нового пользователя
+            const token = this.jwtService.sign(
+                { userId: savedUser.id },
+                { expiresIn: '7d' }
+            );
+            this.logger.log('Создан токен для нового пользователя', token);
 
             const { password: _, ...userWithoutPassword } = savedUser;
 
             return {
                 user: userWithoutPassword,
-                token: loginData.token,
-                sessionId: loginData.session,
+                token: token,
+                sessionId: session.id,
                 message: 'Пользователь успешно создан и вошел в систему'
             }
         } catch (error) {

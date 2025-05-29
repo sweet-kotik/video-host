@@ -1,12 +1,15 @@
 import './styles/VideoList.css';
 import { useState, useEffect } from 'react';
+import config from '../config';
 
 export default function VideoList() {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const checkVideoStatus = () => {
-        fetch('http://192.168.3.3:3001/api/videos')
+        fetch(`${config.apiUrl}/videos`, {
+            credentials: config.withCredentials ? 'include' : 'same-origin'
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Ошибка при получении видео');
@@ -38,18 +41,18 @@ export default function VideoList() {
         return(<p>Loading...</p>)
     }
 
-    return(
+    return (
         <div className="video-list">
-                {videos && videos.filter(video => video.status !== "rejected").map((video) => {      
-                    return (
-                        <div className={`video-id-${video.id} ${video.status === 'pending' ? 'isDisabled' : ''}`} key={video.id}>
-                            <a href={`/video/watch?id=${video.id}`} >
-                                <img src={`http://192.168.3.3:9000/videos/videos/${video.thumbnailPath}/thumbnails/thumbnail-1.jpg`} alt="thumbnail" className="video-thumbnail" />
-                                <p className="video-title">{video.title}</p>
-                            </a>
-                        </div>               
-                    );
-                })}
-            </div>
-    )
+            {videos.map(video => (
+                <div key={video.id} className="video-item">
+                    <h3>{video.title}</h3>
+                    <p>{video.description}</p>
+                    <video controls>
+                        <source src={video.url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            ))}
+        </div>
+    );
 }

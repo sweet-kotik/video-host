@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles/RegistrPage.css";
+import config from '../config';
 
 export default function RegistrPage() {
     const [username, setUsername] = useState('');
@@ -30,11 +31,11 @@ export default function RegistrPage() {
         if (file) {
             formData.append('file', file);
         }
-        
 
-        fetch('http://192.168.3.3:3001/api/user/create', {
+        fetch(`${config.apiUrl}/user/create`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: config.withCredentials ? 'include' : 'same-origin'
         })
         .then(async response => {
             if (!response.ok) {
@@ -49,62 +50,43 @@ export default function RegistrPage() {
             console.groupEnd();
 
             navigate('/');
-
-            setUsername('');
-            setPassword('');
-            setEmail('');
-            document.getElementById('uploadFile').value = '';
         })
-        .catch(e => {
-            console.error('Ошибка:', e);
-            setError(e);
-        })
+        .catch(error => {
+            console.error('Ошибка при создании пользователя:', error);
+            setError(error.message);
+        });
     }
 
     return (
-        <div className="registration-form-component">
-            <form className="registration-form" onSubmit={(e) => {e.preventDefault(); handleSubmit();}}>
-                <h2>Регистрация</h2>
-                <div>
-                    <label htmlFor="username">Имя пользователя</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Введите имя пользователя"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Введите email"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Пароль</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Введите пароль"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="uploadFile">Загрузите аватарку</label>
-                    <input type="file" name="file" id="uploadFile"/>
-                </div>
+        <div className="register-page">
+            <h2>Регистрация</h2>
+            <div className="register-form">
+                <input
+                    type="text"
+                    placeholder="Имя пользователя"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                    type="password"
+                    placeholder="Пароль"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <input
+                    type="file"
+                    id="uploadFile"
+                    accept="image/*"
+                />
                 {error && <p className="error">{error}</p>}
-                <button type="submit">Зарегистрироваться</button>
-            </form>
+                <button onClick={handleSubmit}>Зарегистрироваться</button>
+            </div>
         </div>
     );
 }

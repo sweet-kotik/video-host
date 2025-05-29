@@ -1,5 +1,6 @@
 import { useState } from "react";
 import './styles/UploadPage.css'
+import config from '../config';
 
 export default function UploadPage() {
     const [title, setTitle] = useState("");
@@ -17,9 +18,10 @@ export default function UploadPage() {
         }
         console.groupEnd();
 
-        fetch('http://192.168.3.3:3001/api/videos/upload', {
+        fetch(`${config.apiUrl}/videos/upload`, {
             method: 'POST',
             body: formData,
+            credentials: config.withCredentials ? 'include' : 'same-origin'
         })
         .then(async response => {
             if (!response.ok) {
@@ -45,22 +47,28 @@ export default function UploadPage() {
         });
     }
 
-
-    return(
-        <div>
-            <form className="home-page-upload-form" onSubmit={(e) => e.preventDefault()}>
-                <label htmlFor="videoTitle">Название видео</label>
-                <input type="text" required name="videoTitle" id="videoTitle" className="upload-form-title-input" value={title} onChange={(text) => {
-                    setTitle(text.target.value);
-                }}/>
-                <label htmlFor="videoDescription">Описание видео</label>
-                <input type="text" name="videoDescription" id="videoDescription" className="upload-form-description-input"  value={description} onChange={(text) => {
-                    setDescription(text.target.value);
-                }}/>
-                <label htmlFor="videoFile"></label>
-                <input type="file" name="videoFile" id="videoFile" required />
-                <button type="button" className="home-page-upload-button" onClick={handleCreate}>Загрузить видео</button>
-            </form>
-        </div> 
-    )
+    return (
+        <div className="upload-page">
+            <h2>Загрузка видео</h2>
+            <div className="upload-form">
+                <input
+                    type="text"
+                    placeholder="Название видео"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
+                <textarea
+                    placeholder="Описание видео"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+                <input
+                    type="file"
+                    id="videoFile"
+                    accept="video/*"
+                />
+                <button onClick={handleCreate}>Загрузить</button>
+            </div>
+        </div>
+    );
 }
