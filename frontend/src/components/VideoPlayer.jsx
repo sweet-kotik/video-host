@@ -62,13 +62,13 @@ export default function VideoPlayer({ src }) {
                     enableVolumeScroll: true,
                     enableHoverScroll: true,
                     enableModifiersForNumbers: false,
-                    fullscreenKey: function(event, player) {
+                    fullscreenKey: function (event, player) {
                         return event.which === 70; // f
                     },
-                    muteKey: function(event, player) {
+                    muteKey: function (event, player) {
                         return event.which === 77; // m
                     },
-                    playPauseKey: function(event, player) {
+                    playPauseKey: function (event, player) {
                         return event.which === 32; // space
                     }
                 }
@@ -76,7 +76,7 @@ export default function VideoPlayer({ src }) {
 
             const qualityLevels = playerRef.current.qualityLevels();
             playerRef.current.hlsQualitySelector();
-            
+
             // Устанавливаем начальное качество после загрузки уровней
             qualityLevels.on('addqualitylevel', (event, qualityLevel) => {
                 console.log('Доступно новое качество:', qualityLevel);
@@ -122,7 +122,7 @@ export default function VideoPlayer({ src }) {
             playerRef.current.src({
                 src: src,
                 type: 'application/x-mpegURL'
-              });
+            });
 
             playerRef.current.on('play', () => {
                 console.log('Воспроизведение начато');
@@ -149,10 +149,18 @@ export default function VideoPlayer({ src }) {
     }, [src]);
 
     useEffect(() => {
+        // Проверяем поддержку мыши
+        const hasMouse = window.matchMedia('(pointer: fine)').matches;
+
+        // Проверяем поддержку сенсорного экрана
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (!hasMouse && hasTouch) return;
+
         if (playerRef.current) {
             const player = playerRef.current;
             const controlBar = player.controlBar.el();
-            
+
             if (isHovered) {
                 controlBar.style.opacity = '1';
                 controlBar.style.transition = 'opacity 0.3s ease-in-out';
@@ -165,8 +173,8 @@ export default function VideoPlayer({ src }) {
 
     return (
         <>
-            <div 
-                data-vjs-player 
+            <div
+                data-vjs-player
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >

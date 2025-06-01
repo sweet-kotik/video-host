@@ -26,7 +26,7 @@ export default function VideoWatchPage() {
         }
 
         setIsLoading(true);
-        fetch('http://192.168.3.3:3001/api/videos/findOne?id=' + id)
+        fetch('/api/videos/findOne?id=' + id)
             .then(response => {
                 if (!response) {
                     throw new Error('Ошибка при получении видео');
@@ -34,7 +34,7 @@ export default function VideoWatchPage() {
                 return response.json();
             })
             .then(data => {
-                setHLSURL(`http://192.168.3.3:9000/videos/videos/${data.videoPath}/video/master.m3u8`);
+                setHLSURL(`/minio/videos/videos/${data.videoPath}/video/master.m3u8`);
                 setVideoEntity(data);
                 setIsLoading(false);
             })
@@ -45,7 +45,7 @@ export default function VideoWatchPage() {
             });
     }, [id]);
 
-    
+
 
     if (isLoading) {
         return <div className="loading-container">Загрузка...</div>;
@@ -61,7 +61,7 @@ export default function VideoWatchPage() {
                 <VideoPlayer src={hlsUrl} />
             </div>
             <div className="video-info">
-                <h3 className="video-title">{videoEntity.title}</h3>
+                <h3 className="watch-video-title">{videoEntity.title}</h3>
                 <p className="video-description">{videoEntity.description}</p>
             </div>
         </div>

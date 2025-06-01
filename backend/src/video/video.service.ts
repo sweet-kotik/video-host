@@ -13,10 +13,14 @@ import {
     VideoProcessingException,
     VideoStorageException
 } from '../common/exceptions/video.exceptions';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class VideoService {
     private readonly logger = new Logger(VideoService.name);
+
+
+
 
     constructor(
         @InjectRepository(Video)
@@ -25,6 +29,35 @@ export class VideoService {
 
     async findAll() {
         try {
+            const minioClient = new Minio.Client({
+                endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+                port: parseInt(process.env.MINIO_PORT || '9000'),
+                useSSL: process.env.MINIO_USE_SSL === 'true',
+                accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
+                secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin'
+            });
+
+            const bucketPolicy = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "s3:GetObject",
+                            "s3:GetBucketLocation"
+                        ],
+                        Principal: {
+                            AWS: ['*']
+                        },
+                        "Resource": [
+                            "arn:aws:s3:::*"
+                        ]
+                    }
+                ]
+            };
+
+            await minioClient.setBucketPolicy('videos', JSON.stringify(bucketPolicy));
+
             return await this.videoRepository.find();
         } catch (error) {
             this.logger.error('Ошибка при получении списка видео', error.stack);
@@ -48,7 +81,7 @@ export class VideoService {
         }
     }
 
-    async create(data: CreateVideoDto) {
+    async create(data: CreateVideoDto, user: User) {
         const { file, title, description } = data;
         const generatedFilename = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
         let tempDir: string = '';
@@ -64,6 +97,7 @@ export class VideoService {
             video.createdAt = new Date().toISOString();
             video.status = "pending";
             video.tags = ['test'];
+            video.user = user.id;
             video.category = "other";
             video.isPrivate = false;
             video.views = 0;

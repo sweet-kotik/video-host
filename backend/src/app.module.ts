@@ -25,14 +25,12 @@ import Session from './session/session.entity';
       database: process.env.POSTGRES_DATABASE,
       entities: [Video, User, Session],
       synchronize: process.env.NODE_ENV !== 'production',
-      ssl: process.env.NODE_ENV === 'production',
-      extra: {
-        ssl: process.env.NODE_ENV === 'production' ? {
-          rejectUnauthorized: false
-        } : false
-      },
       retryAttempts: 10,
       retryDelay: 3000,
+      ssl: false,
+      extra: {
+        ssl: false
+      },
       logging: process.env.NODE_ENV !== 'production',
     }),
     VideoModule,

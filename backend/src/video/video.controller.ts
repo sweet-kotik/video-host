@@ -4,6 +4,7 @@ import { CreateVideoDto } from './dto/video.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadedFile } from '@nestjs/common';
 import { VideoUploadException } from '../common/exceptions/video.exceptions';
+import { User } from 'src/user/user.entity';
 
 @Controller('api/videos')
 export class VideoController {
@@ -29,6 +30,7 @@ export class VideoController {
   async create(
     @Body('title') title: string,
     @Body('description') description: string,
+    @Body('user') user: User,
     @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) {
@@ -51,6 +53,6 @@ export class VideoController {
       file
     };
 
-    return await this.videoService.create(createVideoDto);
+    return await this.videoService.create(createVideoDto, user);
   }
 }

@@ -38,21 +38,21 @@ export default function VideoList() {
     }, []);
 
     if (loading) {
-        return(<p>Loading...</p>)
+        return (<p>Loading...</p>)
     }
 
     return (
         <div className="video-list">
-            {videos.map(video => (
-                <div key={video.id} className="video-item">
-                    <h3>{video.title}</h3>
-                    <p>{video.description}</p>
-                    <video controls>
-                        <source src={video.url} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            ))}
+            {videos && videos.filter(video => video.status !== "rejected").map((video) => {
+                return (
+                    <div className={`video-id-${video.id} ${video.status === 'pending' ? 'isDisabled' : ''}`} key={video.id}>
+                        <a href={`/video/watch?id=${video.id}`} >
+                            <img src={`/minio/videos/videos/${video.thumbnailPath}/thumbnails/thumbnail-1.jpg`} alt="thumbnail" className="video-thumbnail" />
+                            <p className="video-title">{video.title}</p>
+                        </a>
+                    </div>
+                );
+            })}
         </div>
     );
 }

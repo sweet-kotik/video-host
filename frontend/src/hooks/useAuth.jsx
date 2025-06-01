@@ -32,23 +32,22 @@ export default function useAuth() {
         }
     };
 
-    const login = async (username, password) => {
+    const login = async (email, password) => {
         try {
             setLoading(true);
             setError(null);
 
-            console.log('Запрос на вход:', username, password);
-            
-            const response = await axios.post(`${config.apiUrl}/user/login`, 
-                { username, password },
+            console.log('Запрос на вход:', email, password);
+
+            const response = await axios.post(`${config.apiUrl}/user/login`,
+                { email, password },
                 { withCredentials: config.withCredentials }
             );
 
             console.log('Получен ответ с сервера', response);
             console.log('Куки после логина:', document.cookie);
-            
-            setUser(response.data.user);
-            setIsAuth(true);
+
+            loadUserData();
             return {
                 data: response.data,
                 success: true

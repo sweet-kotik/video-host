@@ -89,7 +89,7 @@ export class UserService {
                 email,
                 profilePicture: filePath,
                 isEmailVerified: false,
-                isAdmin: true,
+                isAdmin: false,
                 isBanned: false,
                 videoCount: 0,
                 subscriberCount: 0,
@@ -189,11 +189,11 @@ export class UserService {
         }
     }
 
-    async login(username: string, password: string, userAgent: string, ip: string) {
+    async login(email: string, password: string, userAgent: string, ip: string) {
         try {
-            this.logger.log('Бэкенд начал обработку запроса на вход:', username, password);
+            this.logger.log('Бэкенд начал обработку запроса на вход:', email, password);
 
-            const user = await this.userRepository.findOne({ where: { username } });
+            const user = await this.userRepository.findOne({ where: { email } });
 
             this.logger.log('Получен пользователь из бд', user);
             if (!user) {

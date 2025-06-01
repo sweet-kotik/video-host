@@ -37,52 +37,59 @@ export default function RegistrPage() {
             body: formData,
             credentials: config.withCredentials ? 'include' : 'same-origin'
         })
-        .then(async response => {
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error('Произошла ошибка при создании пользователя', errorText);
-            }
-            return await response.json();
-        })
-        .then(data => {
-            console.group('Пользователь успешно загружен:');
-            console.log(data);
-            console.groupEnd();
+            .then(async response => {
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Произошла ошибка при создании пользователя', errorText);
+                }
+                return await response.json();
+            })
+            .then(data => {
+                console.group('Пользователь успешно загружен:');
+                console.log(data);
+                console.groupEnd();
 
-            navigate('/');
-        })
-        .catch(error => {
-            console.error('Ошибка при создании пользователя:', error);
-            setError(error.message);
-        });
+                navigate('/');
+            })
+            .catch(error => {
+                console.error('Ошибка при создании пользователя:', error);
+                setError(error.message);
+            });
     }
 
     return (
         <div className="register-page">
-            <h2>Регистрация</h2>
+            <h2 className="register-header">Регистрация</h2>
             <div className="register-form">
                 <input
                     type="text"
                     placeholder="Имя пользователя"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    name="username"
+                    className="register-username"
                 />
                 <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    name="email"
+                    className="register-email"
                 />
                 <input
                     type="password"
                     placeholder="Пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    name="password"
+                    className="register-password"
                 />
                 <input
                     type="file"
                     id="uploadFile"
                     accept="image/*"
+                    className="register-file"
                 />
                 {error && <p className="error">{error}</p>}
                 <button onClick={handleSubmit}>Зарегистрироваться</button>

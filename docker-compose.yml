@@ -6,15 +6,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     networks:
       - app-network
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   backend:
     build:
@@ -70,6 +65,8 @@ services:
       - ./backend/src/database/init:/docker-entrypoint-initdb.d
     networks:
       - app-network
+    ports:
+      - "5432:5432"
     restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d video-host" ]

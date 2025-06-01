@@ -4,7 +4,7 @@ import useAuth from '../hooks/useAuth';
 import './styles/LoginPage.css';
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { login } = useAuth();
@@ -14,7 +14,7 @@ export default function Login() {
     const handleSubmit = async () => {
         setError('');
 
-        const result = await login(username, password);
+        const result = await login(email, password);
         if (result.success) {
             const from = location.state?.from?.pathname || '/';
             navigate(from, { replace: true });
@@ -25,17 +25,17 @@ export default function Login() {
 
     return (
         <div className="login-form-component">
-            
+
             <form onSubmit={(e) => e.preventDefault()} className="login-form">
-            <h2>Вход</h2>
+                <h2>Вход</h2>
                 <div>
-                    <label htmlFor="username">Имя пользователя:</label>
+                    <label htmlFor="email">Email:</label>
                     <input
-                        type="text"
+                        type="email"
                         className='input-field-username'
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>

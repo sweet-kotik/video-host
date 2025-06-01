@@ -28,23 +28,23 @@ export class UserController {
 
   @Post('/login')
   async login(
-    @Body('username') username: string,
+    @Body('email') email: string,
     @Body('password') password: string,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ) {
-    this.logger.log('Запрос на вход получен');
+    this.logger.log('Запрос на вход получен', email, password);
     this.logger.log('Headers:', request.headers);
     this.logger.log('Cookies:', request.cookies);
 
-    if (!username || !password) {
-      throw new BadRequestException('Username and password are required');
+    if (!email || !password) {
+      throw new BadRequestException('Email and password are required');
     }
 
     const userAgent = request.headers['user-agent'] || 'unknown';
     const ip = request.ip;
 
-    const result = await this.userService.login(username, password, userAgent as string, ip as string);
+    const result = await this.userService.login(email, password, userAgent as string, ip as string);
 
     this.logger.log('Устанавливаем куки с токеном:', result.token);
 
