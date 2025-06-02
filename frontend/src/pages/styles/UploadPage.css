@@ -1,4 +1,5 @@
-.upload-page {
+/* TODO: Написать стили для телефонов, так как на них съезжает все */
+.home-page-upload-form {
     background-color: #2d3561;
     padding: 2rem;
     padding-right: 3rem;
@@ -11,14 +12,14 @@
     width: 90%;
 }
 
-.upload-form label {
+.home-page-upload-form label {
     display: block;
     margin-bottom: 0.5rem;
     color: #ffffff;
     font-weight: 500;
 }
 
-.upload-form input[type="text"] {
+.home-page-upload-form input[type="text"] {
     width: 100%;
     padding: 0.75rem;
     margin-bottom: 1rem;
@@ -27,7 +28,7 @@
     font-size: 1rem;
 }
 
-.upload-form input[type="file"] {
+.home-page-upload-form input[type="file"] {
     margin: 1rem 0;
     padding: 0.5rem;
     border: 1px dashed #2d3561;
@@ -35,7 +36,7 @@
     width: 100%;
 }
 
-.upload-button {
+.home-page-upload-button {
     background-color: #4a9eff;
     color: white;
     padding: 0.75rem 1.5rem;
@@ -46,6 +47,6 @@
     transition: background-color 0.2s;
 }
 
-.upload-button:hover {
+.home-page-upload-button {
     background-color: #0056b3;
 }

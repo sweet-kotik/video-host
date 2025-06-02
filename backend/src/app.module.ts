@@ -24,7 +24,7 @@ import Session from './session/session.entity';
       password: process.env.POSTGRES_PASS,
       database: process.env.POSTGRES_DATABASE,
       entities: [Video, User, Session],
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: true,
       retryAttempts: 10,
       retryDelay: 3000,
       ssl: false,

@@ -1,4 +1,6 @@
-.isDisabled, .isDisabled > a, .isDisabled > img {
+.isDisabled,
+.isDisabled>a,
+.isDisabled>img {
     color: currentColor;
     cursor: not-allowed;
     opacity: 0.5;
@@ -12,21 +14,24 @@
 }
 
 .video-thumbnail {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+    width: 99%;
+    height: 90%;
+    object-fit: contain;
+    border-radius: 10px;
+    background-color: black;
+    border: 1px solid #8892b0;
 }
 
-.video-list > div {
+.video-list>div {
     background-color: #2d3561;
     border-radius: 8px;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-    
+
 }
 
-.video-list > div:hover {
+.video-list>div:hover {
     transform: translateY(-5px);
 }
 

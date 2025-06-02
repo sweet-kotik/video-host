@@ -13,7 +13,6 @@ import {
     VideoProcessingException,
     VideoStorageException
 } from '../common/exceptions/video.exceptions';
-import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class VideoService {
@@ -81,7 +80,7 @@ export class VideoService {
         }
     }
 
-    async create(data: CreateVideoDto, user: User) {
+    async create(data: CreateVideoDto, user: string) {
         const { file, title, description } = data;
         const generatedFilename = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
         let tempDir: string = '';
@@ -97,7 +96,7 @@ export class VideoService {
             video.createdAt = new Date().toISOString();
             video.status = "pending";
             video.tags = ['test'];
-            video.user = user.id;
+            video.user = user;
             video.category = "other";
             video.isPrivate = false;
             video.views = 0;
@@ -123,6 +122,7 @@ export class VideoService {
             const videoPath = path.join(videoDir, 'original.mp4');
             await fs.promises.writeFile(videoPath, file.buffer);
 
+            this.logger.log(`${video.title} - начата генерация превью`);
             // Генерируем превью
             await new Promise((resolve, reject) => {
                 ffmpeg(videoPath)
@@ -130,15 +130,17 @@ export class VideoService {
                         count: 5,
                         folder: thumbnailsDir,
                         filename: 'thumbnail-%i.jpg',
-                        size: '320x240'
+                        //size: '320x240'
                     })
                     .on('end', resolve)
-                    .on('error', (err) => {
+                    .on('error', (err: any) => {
                         this.logger.error('Ошибка при генерации превью', err);
                         reject(new VideoProcessingException('Ошибка при генерации превью'));
                     });
             });
+            this.logger.log(`${video.title} - превью успешно сгенерировано`);
 
+            this.logger.log(`${video.title} - начата конвертация в HLS`);
             // Конвертируем в HLS с разными качествами
             const qualities = ['360p', '480p', '720p', '1080'];
             const ffmpegCommands = qualities.map(quality => {
@@ -155,6 +157,7 @@ export class VideoService {
                     ])
                     .output(path.join(videoDir, `${quality}.m3u8`));
             });
+            this.logger.log(`${video.title} - конвернтация прошла успешно`);
 
             // Создаем основной плейлист
             const masterPlaylist = `#EXTM3U
@@ -165,14 +168,14 @@ export class VideoService {
             await fs.promises.writeFile(path.join(videoDir, 'master.m3u8'), masterPlaylist);
 
             await Promise.all(ffmpegCommands.map(cmd => new Promise((resolve, reject) => {
-                cmd.on('end', resolve).on('error', (err) => {
+                cmd.on('end', resolve).on('error', (err: any) => {
                     this.logger.error('Ошибка при конвертации видео', err);
                     reject(new VideoProcessingException('Ошибка при конвертации видео'));
                 }).run();
             })));
 
 
-
+            this.logger.log('Подключаюсь к MinIO');
             // Загружаем в MinIO
             const minioClient = new Minio.Client({
                 endPoint: process.env.MINIO_ENDPOINT || 'localhost',
@@ -181,7 +184,9 @@ export class VideoService {
                 accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
                 secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin'
             });
+            this.logger.log('Подключение успешно');
 
+            this.logger.log('Начинаю загружать видео файлы');
             // Загружаем видео файлы
             const videoFiles = await fs.promises.readdir(videoDir);
             for (const file of videoFiles) {
@@ -193,7 +198,9 @@ export class VideoService {
                     fileContent
                 );
             }
+            this.logger.log('Видео файлы загружены успешно');
 
+            this.logger.log('Начинаю загружать превью');
             // Загружаем превью
             const thumbnailFiles = await fs.promises.readdir(thumbnailsDir);
             for (const file of thumbnailFiles) {
@@ -205,6 +212,7 @@ export class VideoService {
                     fileContent
                 );
             }
+            this.logger.log('Привеью успешно загружено');
 
             // Создаем запись в БД
             video.videoPath = generatedFilename;

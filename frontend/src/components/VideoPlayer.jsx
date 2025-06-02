@@ -14,13 +14,30 @@ export default function VideoPlayer({ src }) {
     const playerRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
 
-    console.group('Data VideoPlayer');
-    console.log(src);
-    console.groupEnd();
+    const saveVolume = (volume) => {
+        try {
+            localStorage.setItem('videojs-volume', volume.toString());
+            console.log('Громкость успешно сохранена:', volume);
+        } catch (error) {
+            console.warn('Не удалось сохранить громкость:', error);
+        }
+    };
+
+    const loadSavedVolume = () => {
+        try {
+            const savedVolume = localStorage.getItem('videojs-volume');
+            console.log('Громкость загружена из хранилища:', savedVolume);
+            return savedVolume ? parseFloat(savedVolume) : 1.0;
+        } catch (error) {
+            console.warn('Не удалось загрузить сохраненную громкость:', error);
+            return 1.0;
+        }
+    };
 
     useEffect(() => {
         if (!playerRef.current) {
             const videoElement = videoRef.current;
+            const savedVolume = loadSavedVolume();
             if (!videoElement) return;
 
             playerRef.current = videojs(videoElement, {
@@ -29,6 +46,7 @@ export default function VideoPlayer({ src }) {
                 autoplay: true,
                 preload: 'auto',
                 html5: {
+                    nativeControlsForTouch: true,
                     hls: {
                         smoothQualityChange: false,
                         overrideNative: true,
@@ -41,7 +59,9 @@ export default function VideoPlayer({ src }) {
                     children: {
                         'playToggle': {},
                         'muteToggle': {},
-                        'volumeControl': {},
+                        'volumeControl': {
+
+                        },
                         'currentTimeDisplay': {},
                         'timeDivider': {},
                         'durationDisplay': {},
@@ -59,8 +79,8 @@ export default function VideoPlayer({ src }) {
                     volumeStep: 0.1,
                     seekStep: 5,
                     alwaysCaptureHotkeys: true,
-                    enableVolumeScroll: true,
-                    enableHoverScroll: true,
+                    enableVolumeScroll: false,
+                    enableHoverScroll: false,
                     enableModifiersForNumbers: false,
                     fullscreenKey: function (event, player) {
                         return event.which === 70; // f
@@ -77,11 +97,10 @@ export default function VideoPlayer({ src }) {
             const qualityLevels = playerRef.current.qualityLevels();
             playerRef.current.hlsQualitySelector();
 
-            // Устанавливаем начальное качество после загрузки уровней
             qualityLevels.on('addqualitylevel', (event, qualityLevel) => {
                 console.log('Доступно новое качество:', qualityLevel);
                 const levels = qualityLevels.levels_;
-                // Ищем уровень качества 1080p
+
                 const targetLevel = levels.find(level => level.height === 1080);
                 if (targetLevel) {
                     targetLevel.enabled = true;
@@ -98,6 +117,15 @@ export default function VideoPlayer({ src }) {
 
             qualityLevels.on('selectedqualitylevelchange', (event, qualityLevel) => {
                 console.log('Выбрано новое качество:', qualityLevel);
+            });
+
+            playerRef.current.ready(() => {
+                playerRef.current.volume(savedVolume);
+
+                playerRef.current.on('volumechange', () => {
+                    const currentVolume = playerRef.current.volume();
+                    saveVolume(currentVolume);
+                });
             });
 
             playerRef.current.on('error', (error) => {

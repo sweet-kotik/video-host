@@ -13,7 +13,7 @@ export default function UploadPage() {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('file', document.getElementById('videoFile').files[0]);
-        formData.append('user', user);
+        formData.append('user', user.id);
 
         console.group("Form data");
         for (const [key, value] of formData.entries()) {
@@ -51,30 +51,20 @@ export default function UploadPage() {
     }
 
     return (
-        <div className="upload-page">
-            <h2>Загрузка видео</h2>
-            <div className="upload-form">
-                <input
-                    type="text"
-                    placeholder="Название видео"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    name="title"
-                />
-                <textarea
-                    placeholder="Описание видео"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    name="description"
-                />
-                <input
-                    type="file"
-                    id="videoFile"
-                    accept="video/*"
-                    name="file"
-                />
-                <button onClick={handleCreate} className="upload-button">Загрузить</button>
-            </div>
+        <div>
+            <form className="home-page-upload-form" onSubmit={(e) => e.preventDefault()}>
+                <label htmlFor="videoTitle">Название видео</label>
+                <input type="text" required name="videoTitle" id="videoTitle" className="upload-form-title-input" value={title} onChange={(text) => {
+                    setTitle(text.target.value);
+                }} />
+                <label htmlFor="videoDescription">Описание видео</label>
+                <input type="text" name="videoDescription" id="videoDescription" className="upload-form-description-input" value={description} onChange={(text) => {
+                    setDescription(text.target.value);
+                }} />
+                <label htmlFor="videoFile"></label>
+                <input type="file" name="videoFile" id="videoFile" required />
+                <button type="button" className="home-page-upload-button" onClick={handleCreate}>Загрузить видео</button>
+            </form>
         </div>
     );
 }
