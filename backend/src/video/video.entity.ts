@@ -18,7 +18,7 @@ export class Video {
     dislikes: number;
 
     @Column({ nullable: true })
-    Comments: string;
+    comments: string[];
 
     @Column({ nullable: true })
     user: string;

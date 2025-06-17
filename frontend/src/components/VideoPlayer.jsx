@@ -177,10 +177,8 @@ export default function VideoPlayer({ src }) {
     }, [src]);
 
     useEffect(() => {
-        // Проверяем поддержку мыши
         const hasMouse = window.matchMedia('(pointer: fine)').matches;
 
-        // Проверяем поддержку сенсорного экрана
         const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         if (!hasMouse && hasTouch) return;

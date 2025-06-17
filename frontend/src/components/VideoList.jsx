@@ -27,13 +27,10 @@ export default function VideoList() {
     };
 
     useEffect(() => {
-        // Первоначальная загрузка видео
         checkVideoStatus();
 
-        // Настройка интервала для проверки статусов каждые 5 секунд
-        const intervalId = setInterval(checkVideoStatus, 20000);
+        const intervalId = setInterval(checkVideoStatus, 100000);
 
-        // Очистка интервала при размонтировании компонента
         return () => clearInterval(intervalId);
     }, []);
 

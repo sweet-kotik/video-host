@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client';
 import HomePage from './pages/Homepage';
 import reportWebVitals from './reportWebVitals';
@@ -13,20 +13,22 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-  <UpperMenu />
-    <Routes>
-      <Route path='/' element={<HomePage/>}/>
-      <Route path='/video/watch/' element={<VideoWatchPage />}/>
-      <Route path='/login' element={<Login />} />
-      <Route path='register' element={<RegistrPage />} />
-      <Route path='/upload/' element={
-        <ProtectedRoute>
-          <UploadPage /> 
-        </ProtectedRoute>
-      } />
-    </Routes>
-  </BrowserRouter>
+  <StrictMode>
+    <BrowserRouter>
+    <UpperMenu />
+      <Routes>
+        <Route path='/' element={<HomePage/>}/>
+        <Route path='/video/watch/' element={<VideoWatchPage />}/>
+        <Route path='/login' element={<Login />} />
+        <Route path='register' element={<RegistrPage />} />
+        <Route path='/upload/' element={
+          <ProtectedRoute>
+            <UploadPage /> 
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </BrowserRouter>
+  </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

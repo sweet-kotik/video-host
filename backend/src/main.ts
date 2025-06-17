@@ -26,7 +26,7 @@ async function bootstrap() {
         "http://localhost",
         "http://frontend"
       ],
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "UPDATE"],
       credentials: true,
       "preflightContinue": false,
     },

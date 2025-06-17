@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
-    mem_limit: 1g
-    cpus: 0.5
+    mem_limit: 2g
+    cpus: 0.7
     networks:
       - app-network
     restart: unless-stopped
@@ -84,11 +84,14 @@ services:
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_DEFAULT_BUCKETS=video
     volumes:
       - minio_data:/data
+      - ./init-minio.sh:/init-minio.sh
     mem_limit: 512m
     cpus: 0.3
-    command: server /data --console-address ":9001"
+    entrypoint: /bin/bash
+    command: /init-minio.sh
     networks:
       - app-network
     restart: unless-stopped
